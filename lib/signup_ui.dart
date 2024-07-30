@@ -1,3 +1,4 @@
+import 'package:farmers_guide/components.dart';
 import 'package:farmers_guide/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -136,16 +137,10 @@ class _SignUpUiState extends State<SignUpUi> {
                   ),
                   SizedBox(
                     width: deviceSize.width * 0.65,
-                    child: FilledButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            // Attempt logging in
-                          }
-                        },
-                        child: const Text(
-                          "Sign Up",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        )),
+                    child: PrimaryButton(
+                      labelText: "Sign Up",
+                      onPressed: () {},
+                    ),
                   ),
                   const Spacer(),
                   const Text("Already have an account? Log In"),

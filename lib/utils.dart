@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class Utils {
   static bool isValidEmail(String email) {
@@ -8,4 +8,7 @@ class Utils {
   static Widget heightSpacer40 = const SizedBox(
     height: 40,
   );
+
+  static ButtonStyle primaryButtonStyle = FilledButton.styleFrom(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)));
 }
