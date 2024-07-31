@@ -49,15 +49,8 @@ class _SignUpUiState extends State<SignUpUi> {
                 children: [
                   SizedBox(
                     width: deviceSize.width,
-                    child: Text(
-                      "Hello! Register to get\nstarted",
-                      textAlign: TextAlign.start,
-                      style: GoogleFonts.outfit(
-                          textStyle: Theme.of(context)
-                              .textTheme
-                              .titleLarge
-                              ?.copyWith(fontWeight: FontWeight.w600)),
-                    ),
+                    child: const BigTitleText(
+                        text: "Hello! Register to get\nstarted"),
                   ),
                   Utils.heightSpacer40,
                   TextFormField(

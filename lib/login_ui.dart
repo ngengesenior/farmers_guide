@@ -42,15 +42,8 @@ class _LoginUiState extends State<LoginUi> {
               children: [
                 SizedBox(
                   width: deviceSize.width,
-                  child: Text(
-                    "Welcome back.\nGlad to see you, again",
-                    textAlign: TextAlign.start,
-                    style: GoogleFonts.outfit(
-                        textStyle: Theme.of(context)
-                            .textTheme
-                            .titleLarge
-                            ?.copyWith(fontWeight: FontWeight.w600)),
-                  ),
+                  child: const BigTitleText(
+                      text: "Welcome back.\nGlad to see you, again"),
                 ),
                 Utils.heightSpacer40,
                 TextFormField(

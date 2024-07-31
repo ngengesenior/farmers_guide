@@ -21,34 +21,34 @@ final ColorScheme colorScheme = ColorScheme(
 );
 
 final ThemeData appTheme = ThemeData(
-  colorScheme: colorScheme,
-  useMaterial3: true,
-  textTheme: GoogleFonts.outfitTextTheme(),
-  inputDecorationTheme: InputDecorationTheme(
-    fillColor: colorScheme.surface,
-    filled: true,
-    border: OutlineInputBorder(
-      borderSide: BorderSide(color: colorScheme.outline),
+    colorScheme: colorScheme,
+    useMaterial3: true,
+    textTheme: GoogleFonts.outfitTextTheme(),
+    inputDecorationTheme: InputDecorationTheme(
+      fillColor: colorScheme.surface,
+      filled: true,
+      border: OutlineInputBorder(
+        borderSide: BorderSide(color: colorScheme.outline),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: colorScheme.outline),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: colorScheme.primary),
+      ),
     ),
-    enabledBorder: OutlineInputBorder(
-      borderSide: BorderSide(color: colorScheme.outline),
+    appBarTheme: AppBarTheme(
+      backgroundColor: colorScheme.surface,
+      iconTheme: IconThemeData(color: colorScheme.onSurface),
     ),
-    focusedBorder: OutlineInputBorder(
-      borderSide: BorderSide(color: colorScheme.primary),
+    buttonTheme: ButtonThemeData(
+      buttonColor: colorScheme.primary,
+      textTheme: ButtonTextTheme.primary,
     ),
-  ),
-  appBarTheme: AppBarTheme(
-    backgroundColor: colorScheme.surface,
-    iconTheme: IconThemeData(color: colorScheme.onSurface),
-  ),
-  buttonTheme: ButtonThemeData(
-    buttonColor: colorScheme.primary,
-    textTheme: ButtonTextTheme.primary,
-  ),
-  elevatedButtonTheme: ElevatedButtonThemeData(
-    style: ButtonStyle(
-      backgroundColor: WidgetStateProperty.all(colorScheme.primary),
-      foregroundColor: WidgetStateProperty.all(colorScheme.onPrimary),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ButtonStyle(
+        backgroundColor: WidgetStateProperty.all(colorScheme.primary),
+        foregroundColor: WidgetStateProperty.all(colorScheme.onPrimary),
+      ),
     ),
-  ),
-);
+    cardColor: colorScheme.primary);
