@@ -9,6 +9,14 @@ class WeatherUi extends StatefulWidget {
 }
 
 class _WeatherUiState extends State<WeatherUi> {
+  bool expanded = false;
+
+  void expandToggle() {
+    setState(() {
+      expanded = !expanded;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final Size deviceSize = MediaQuery.of(context).size;
@@ -76,60 +84,74 @@ class _WeatherUiState extends State<WeatherUi> {
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
-                            const Column(
-                              children: [
-                                Text(
-                                  "Now",
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                CurrentEssentialWeatherCard(),
-                              ],
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  const Text(
+                                    "Now",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  Expanded(
+                                    child: CurrentEssentialWeatherCard(
+                                      expanded: expanded,
+                                      onExpand: expandToggle,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                             const SizedBox(height: 32),
-                            Column(
-                              children: [
-                                const Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    PeriodSelectionItem(title: "Days"),
-                                  ],
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 8.0,
-                                    horizontal: 20,
-                                  ),
-                                  child: SizedBox(
-                                    height: 140,
-                                    child: ListView(
-                                      scrollDirection: Axis.horizontal,
-                                      children: const [
-                                        WeatherWidget(
-                                          key: ValueKey('Today'),
-                                          activeKey: ValueKey('Today'),
-                                          day: 'Today',
-                                          temperature: '20',
-                                          weather: 'Sunny',
+                            AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 600),
+                              child: expanded
+                                  ? const SizedBox.shrink()
+                                  : Column(
+                                      children: [
+                                        const Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            PeriodSelectionItem(title: "Days"),
+                                          ],
                                         ),
-                                        WeatherWidget(
-                                          key: ValueKey('Tomorrow'),
-                                          activeKey: ValueKey('Today'),
-                                          day: 'Tomorrow',
-                                          temperature: '26',
-                                          weather: 'Rainy',
-                                        ),
-                                        WeatherWidget(
-                                          key: ValueKey('Friday'),
-                                          activeKey: ValueKey('Today'),
-                                          day: 'Friday',
-                                          temperature: '2',
-                                          weather: 'Snowy',
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 8.0,
+                                            horizontal: 20,
+                                          ),
+                                          child: SizedBox(
+                                            height: 140,
+                                            child: ListView(
+                                              scrollDirection: Axis.horizontal,
+                                              children: const [
+                                                WeatherWidget(
+                                                  key: ValueKey('Today'),
+                                                  activeKey: ValueKey('Today'),
+                                                  day: 'Today',
+                                                  temperature: '20',
+                                                  weather: 'Sunny',
+                                                ),
+                                                WeatherWidget(
+                                                  key: ValueKey('Tomorrow'),
+                                                  activeKey: ValueKey('Today'),
+                                                  day: 'Tomorrow',
+                                                  temperature: '26',
+                                                  weather: 'Rainy',
+                                                ),
+                                                WeatherWidget(
+                                                  key: ValueKey('Friday'),
+                                                  activeKey: ValueKey('Today'),
+                                                  day: 'Friday',
+                                                  temperature: '2',
+                                                  weather: 'Snowy',
+                                                ),
+                                              ],
+                                            ),
+                                          ),
                                         ),
                                       ],
                                     ),
-                                  ),
-                                ),
-                              ],
                             ),
                           ],
                         ),
