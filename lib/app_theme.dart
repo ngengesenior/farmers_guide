@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 final ColorScheme colorScheme = ColorScheme(
   brightness: Brightness.light,
@@ -23,7 +22,6 @@ final ColorScheme colorScheme = ColorScheme(
 final ThemeData appTheme = ThemeData(
     colorScheme: colorScheme,
     useMaterial3: true,
-    textTheme: GoogleFonts.outfitTextTheme(),
     inputDecorationTheme: InputDecorationTheme(
       fillColor: colorScheme.surface,
       filled: true,

@@ -1,4 +1,5 @@
 import 'package:farmers_guide/utils.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -40,57 +41,140 @@ class BigTitleText extends StatelessWidget {
   }
 }
 
-class CurrentEssentialWeatherCard extends StatelessWidget {
+class CurrentEssentialWeatherCard extends StatefulWidget {
   const CurrentEssentialWeatherCard({super.key});
 
   @override
+  State<CurrentEssentialWeatherCard> createState() =>
+      _CurrentEssentialWeatherCardState();
+}
+
+class _CurrentEssentialWeatherCardState
+    extends State<CurrentEssentialWeatherCard> {
+  bool expanded = false;
+  @override
   Widget build(BuildContext context) {
     return Card(
-      surfaceTintColor: Theme.of(context).colorScheme.onSurface,
-      child: Column(
-        children: [
-          const SizedBox(
-            height: 16,
-          ),
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Column(
+      color: Theme.of(context).colorScheme.primary,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 18.0, horizontal: 24),
+        child: Column(
+          children: [
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                WeatherItem(
+                  description: 'Feels like',
+                  value: '20°C',
+                ),
+                WeatherItem(
+                  description: 'Air Pressure',
+                  value: '110mb',
+                ),
+                WeatherItem(
+                  description: 'Humidity',
+                  value: '68%',
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  expanded = !expanded;
+                });
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text("Feels like"),
                   Text(
-                    "20°C",
-                    style: TextStyle(fontWeight: FontWeight.w600),
+                    "Perfect weather for planting",
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                          color: Colors.white,
+                        ),
+                  ),
+                  Icon(
+                    expanded
+                        ? CupertinoIcons.chevron_up_circle
+                        : CupertinoIcons.chevron_down_circle,
+                    color: Colors.white,
                   )
                 ],
               ),
-              Column(
+            ),
+            if (expanded)
+              const Column(
                 children: [
-                  Text("Air Pressure"),
-                  Text(
-                    "110mb",
-                    style: TextStyle(fontWeight: FontWeight.w600),
-                  )
-                ],
-              ),
-              Column(
-                children: [
-                  Text("Humidity"),
-                  Text("68%", style: TextStyle(fontWeight: FontWeight.w600))
+                  MoreItem(
+                      message:
+                          "Moderate Temperatures: Cool to mild temperatures are best, generally found in spring and fall."),
+                  MoreItem(
+                      message:
+                          "Moderate Temperatures: Cool to mild temperatures are best, generally found in spring and fall."),
+                  MoreItem(
+                      message:
+                          "Moderate Temperatures: Cool to mild temperatures are best, generally found in spring and fall."),
+                  MoreItem(
+                      message:
+                          "Moderate Temperatures: Cool to mild temperatures are best, generally found in spring and fall."),
                 ],
               )
-            ],
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Text("Perfect weather for planting",
-              style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(
-            height: 16,
-          ),
-        ],
+          ],
+        ),
       ),
+    );
+  }
+}
+
+class MoreItem extends StatelessWidget {
+  const MoreItem({
+    super.key,
+    required this.message,
+  });
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: Text(
+        message,
+        style: const TextStyle(color: Colors.white),
+      ),
+    );
+  }
+}
+
+class WeatherItem extends StatelessWidget {
+  const WeatherItem({
+    super.key,
+    required this.description,
+    required this.value,
+  });
+
+  final String description;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          description,
+          style: const TextStyle(fontSize: 12, color: Colors.white),
+        ),
+        Text(
+          value,
+          style: const TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 20,
+            color: Colors.white,
+          ),
+        )
+      ],
     );
   }
 }
