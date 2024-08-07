@@ -1,4 +1,5 @@
 import 'package:farmers_guide/app_theme.dart';
+import 'package:farmers_guide/farm_create_ui.dart';
 import 'package:farmers_guide/weather_ui.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: appTheme,
-      home: const WeatherUi(),
+      home: const CreateFarmUI(),
     );
   }
 }
