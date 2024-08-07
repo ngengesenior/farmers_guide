@@ -42,8 +42,11 @@ class BigTitleText extends StatelessWidget {
 }
 
 class CurrentEssentialWeatherCard extends StatefulWidget {
-  const CurrentEssentialWeatherCard({super.key});
+  const CurrentEssentialWeatherCard(
+      {super.key, this.onExpand, this.expanded = false});
 
+  final void Function()? onExpand;
+  final bool expanded;
   @override
   State<CurrentEssentialWeatherCard> createState() =>
       _CurrentEssentialWeatherCardState();
@@ -51,7 +54,6 @@ class CurrentEssentialWeatherCard extends StatefulWidget {
 
 class _CurrentEssentialWeatherCardState
     extends State<CurrentEssentialWeatherCard> {
-  bool expanded = false;
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -81,11 +83,7 @@ class _CurrentEssentialWeatherCardState
               height: 20,
             ),
             GestureDetector(
-              onTap: () {
-                setState(() {
-                  expanded = !expanded;
-                });
-              },
+              onTap: widget.onExpand,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -96,7 +94,7 @@ class _CurrentEssentialWeatherCardState
                         ),
                   ),
                   Icon(
-                    expanded
+                    widget.expanded
                         ? CupertinoIcons.chevron_up_circle
                         : CupertinoIcons.chevron_down_circle,
                     color: Colors.white,
@@ -104,23 +102,31 @@ class _CurrentEssentialWeatherCardState
                 ],
               ),
             ),
-            if (expanded)
-              const Column(
-                children: [
-                  MoreItem(
-                      message:
-                          "Moderate Temperatures: Cool to mild temperatures are best, generally found in spring and fall."),
-                  MoreItem(
-                      message:
-                          "Moderate Temperatures: Cool to mild temperatures are best, generally found in spring and fall."),
-                  MoreItem(
-                      message:
-                          "Moderate Temperatures: Cool to mild temperatures are best, generally found in spring and fall."),
-                  MoreItem(
-                      message:
-                          "Moderate Temperatures: Cool to mild temperatures are best, generally found in spring and fall."),
-                ],
-              )
+            Expanded(
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 500),
+                switchInCurve: Curves.easeIn,
+                switchOutCurve: Curves.easeOut,
+                child: widget.expanded
+                    ? ListView(
+                        children: const [
+                          MoreItem(
+                              message:
+                                  "Moderate Temperatures: Cool to mild temperatures are best, generally found in spring and fall."),
+                          MoreItem(
+                              message:
+                                  "Moderate Temperatures: Cool to mild temperatures are best, generally found in spring and fall."),
+                          MoreItem(
+                              message:
+                                  "Moderate Temperatures: Cool to mild temperatures are best, generally found in spring and fall."),
+                          MoreItem(
+                              message:
+                                  "Moderate Temperatures: Cool to mild temperatures are best, generally found in spring and fall."),
+                        ],
+                      )
+                    : const SizedBox.shrink(),
+              ),
+            )
           ],
         ),
       ),
