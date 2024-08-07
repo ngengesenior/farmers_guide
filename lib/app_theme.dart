@@ -49,4 +49,5 @@ final ThemeData appTheme = ThemeData(
         foregroundColor: WidgetStateProperty.all(colorScheme.onPrimary),
       ),
     ),
-    cardColor: colorScheme.primary);
+    cardTheme: CardTheme(
+        color: colorScheme.primary, shadowColor: colorScheme.primary));
