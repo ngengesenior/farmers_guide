@@ -133,6 +133,5 @@ class _CreateFarmUIState extends State<CreateFarmUI> {
     setState(() {
       _farmPosition = position;
     });
-    //print('${position.latitude},${position.longitude}');
   }
 }
