@@ -1,6 +1,4 @@
-import 'package:farmers_guide/AppTheme.dart';
-import 'package:farmers_guide/login_ui.dart';
-import 'package:farmers_guide/signup_ui.dart';
+import 'package:farmers_guide/app_theme.dart';
 import 'package:farmers_guide/weather_ui.dart';
 import 'package:flutter/material.dart';
 

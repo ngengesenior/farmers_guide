@@ -1,7 +1,6 @@
 import 'package:farmers_guide/components.dart';
 import 'package:farmers_guide/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class SignUpUi extends StatefulWidget {
   const SignUpUi({super.key});
