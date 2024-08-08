@@ -27,7 +27,6 @@ class Networking {
       final Map<String, dynamic> responseData = jsonDecode(response.body);
       return RegisterResponse.fromJson(responseData);
     } else {
-      // Handle error (you can customize this part)
       throw Exception('Failed to register user: ${response.statusCode}');
     }
   }
@@ -51,7 +50,6 @@ class Networking {
       final Map<String, dynamic> responseData = jsonDecode(response.body);
       return AuthToken.fromJson(responseData);
     } else {
-      // Handle error (you can customize this part)
       throw Exception('Failed to login: ${response.statusCode}');
     }
   }
