@@ -1,7 +1,6 @@
 import 'package:farmers_guide/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class PrimaryButton extends StatelessWidget {
   final VoidCallback onPressed;
@@ -32,11 +31,10 @@ class BigTitleText extends StatelessWidget {
     return Text(
       text,
       textAlign: textAlign,
-      style: GoogleFonts.outfit(
-          textStyle: Theme.of(context)
-              .textTheme
-              .titleLarge
-              ?.copyWith(fontWeight: FontWeight.w600)),
+      style: Theme.of(context)
+          .textTheme
+          .titleLarge
+          ?.copyWith(fontWeight: FontWeight.w600),
     );
   }
 }
