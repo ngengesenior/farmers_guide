@@ -1,12 +1,13 @@
 import 'dart:convert';
 
+import 'package:farmers_guide/constants/app_url.dart';
 import 'package:farmers_guide/models/login_request.dart';
 import 'package:farmers_guide/models/token.dart';
+import 'package:farmers_guide/services/token_service.dart';
+import 'package:farmers_guide/services/user_state.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/register.dart';
-
-const baseUrl = "https://farmerguide-5dc91de39f9d.herokuapp.com";
 
 class Networking {
   static Future<(String? error, String success)> registerUser(
@@ -54,7 +55,9 @@ class Networking {
     if (response.isSuccessful) {
       // Parse the response body into a RegisterResponse object
       final Map<String, dynamic> responseData = jsonDecode(response.body);
-      final _ = AuthToken.fromJson(responseData);
+      final authToken = AuthToken.fromJson(responseData);
+      TokenService.setToken(authToken);
+      await userMeState.fetch();
       return (null, 'login success');
     } else {
       final responseBody = jsonDecode(response.body);
