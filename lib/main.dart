@@ -1,4 +1,5 @@
 import 'package:farmers_guide/app_theme.dart';
+import 'package:farmers_guide/farm_create_ui.dart';
 import 'package:farmers_guide/login_ui.dart';
 import 'package:farmers_guide/services/user_state.dart';
 import 'package:farmers_guide/signup_ui.dart';
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
         WeatherUi.routeName: (_) => const WeatherUi(),
         LoginUi.routeName: (_) => const LoginUi(),
         SignUpUi.routeName: (_) => const SignUpUi(),
+        CreateFarmUI.routeName: (_) => const CreateFarmUI(),
       },
       home: FutureBuilder(
         future: userMeState.initialise(),
@@ -43,6 +45,7 @@ class MyApp extends StatelessWidget {
           if (user == null) {
             return const LoginUi();
           } else {
+            if (user.farms.isEmpty) return const CreateFarmUI();
             return const WeatherUi();
           }
         },
