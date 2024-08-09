@@ -16,7 +16,7 @@ class _CreateFarmUIState extends State<CreateFarmUI> {
   final TextEditingController _farmNameController = TextEditingController();
   final TextEditingController _farmSizeController = TextEditingController();
   bool? isAtFarm = false;
-  Position? _farmPosition;
+  Position? farmPosition;
 
   @override
   void dispose() {
@@ -131,7 +131,7 @@ class _CreateFarmUIState extends State<CreateFarmUI> {
     Position? position =
         await Geolocator.getCurrentPosition(locationSettings: settings);
     setState(() {
-      _farmPosition = position;
+      farmPosition = position;
     });
   }
 }
