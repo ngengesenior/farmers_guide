@@ -23,6 +23,10 @@ class LoginRequest {
     };
   }
 
+  String toParams() {
+    return 'username=$username&password=$password&grant_type=password';
+  }
+
   // Method to create a copy of the LoginRequest with updated values
   LoginRequest copyWith({
     String? username,

@@ -1,11 +1,16 @@
+import 'package:farmers_guide/alerts.dart';
 import 'package:farmers_guide/components.dart';
+import 'package:farmers_guide/login_ui.dart';
+import 'package:farmers_guide/models/register.dart';
+import 'package:farmers_guide/networking/networking.dart';
 import 'package:farmers_guide/utils.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:loader_overlay/loader_overlay.dart';
+import 'package:loading_indicator/loading_indicator.dart';
 
 class SignUpUi extends StatefulWidget {
   const SignUpUi({super.key});
-
+  static const routeName = '/signup';
   @override
   State<SignUpUi> createState() => _SignUpUiState();
 }
@@ -18,6 +23,8 @@ class _SignUpUiState extends State<SignUpUi> {
       TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   bool _isPasswordVisible = false;
+
+  bool showErrors = false;
 
   @override
   void dispose() {
@@ -39,120 +46,173 @@ class _SignUpUiState extends State<SignUpUi> {
     Size deviceSize = MediaQuery.of(context).size;
     return Scaffold(
       body: SafeArea(
-        child: Container(
-          height: deviceSize.height,
-          padding: EdgeInsets.all(deviceSize.width * 0.06),
-          child: Form(
-            key: _formKey,
-            child: ListView(
-              children: [
-                SizedBox(
-                  height: deviceSize.height * 8 / 10,
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        width: deviceSize.width,
-                        child: const BigTitleText(
-                            text: "Hello! Register to get\nstarted"),
-                      ),
-                      Utils.heightSpacer40,
-                      TextFormField(
-                        controller: _usernameController,
-                        decoration:
-                            const InputDecoration(labelText: "Username"),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a username';
-                          }
-                          if (value.length < 3) {
-                            return 'Username must be at least 3 letters';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      TextFormField(
-                        controller: _emailController,
-                        decoration: const InputDecoration(labelText: "Email"),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your email';
-                          }
-                          if (!Utils.isValidEmail(value)) {
-                            return 'Please enter a valid email address';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      TextFormField(
-                        controller: _passwordController,
-                        obscureText: !_isPasswordVisible,
-                        decoration: InputDecoration(
-                            labelText: "Password",
-                            suffixIcon: IconButton(
-                              icon: Icon(_isPasswordVisible
-                                  ? Icons.visibility
-                                  : Icons.visibility_off_outlined),
-                              onPressed: _toggleVisibility,
-                            )),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your password';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      TextFormField(
-                        controller: _confirmPasswordController,
-                        obscureText: !_isPasswordVisible,
-                        decoration: InputDecoration(
-                            labelText: "Confirm Password",
-                            suffixIcon: IconButton(
-                              icon: Icon(_isPasswordVisible
-                                  ? Icons.visibility
-                                  : Icons.visibility_off_outlined),
-                              onPressed: _toggleVisibility,
-                            )),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please confirm your password';
-                          }
-                          if (value != _passwordController.text) {
-                            return 'Passwords do not match';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      SizedBox(
-                        width: deviceSize.width * 0.65,
-                        child: PrimaryButton(
-                          labelText: "Sign Up",
-                          onPressed: () {},
-                        ),
-                      ),
-                    ],
-                  ),
+        child: LoaderOverlay(
+          useDefaultLoading: false,
+          overlayColor: Colors.white.withOpacity(0.6),
+          overlayWidgetBuilder: (_) {
+            return const Center(
+              child: SizedBox.square(
+                dimension: 60,
+                child: LoadingIndicator(
+                  indicatorType: Indicator.lineScale,
+                  colors: [Colors.black],
                 ),
-                // const Spacer(),
-                SizedBox(
-                  height: 20,
-                  child: Center(
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: const Text("Already have an account? Log In"),
+              ),
+            );
+          },
+          child: Container(
+            height: deviceSize.height,
+            padding: EdgeInsets.all(deviceSize.width * 0.06),
+            child: Form(
+              key: _formKey,
+              autovalidateMode: showErrors ? AutovalidateMode.always : null,
+              child: ListView(
+                children: [
+                  SizedBox(
+                    height: deviceSize.height * 8 / 10,
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          width: deviceSize.width,
+                          child: const BigTitleText(
+                              text: "Hello! Register to get\nstarted"),
+                        ),
+                        Utils.heightSpacer40,
+                        TextFormField(
+                          controller: _usernameController,
+                          decoration:
+                              const InputDecoration(labelText: "Username"),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a username';
+                            }
+                            if (value.length < 3) {
+                              return 'Username must be at least 3 letters';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          controller: _emailController,
+                          decoration: const InputDecoration(labelText: "Email"),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your email';
+                            }
+                            if (!Utils.isValidEmail(value)) {
+                              return 'Please enter a valid email address';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        TextFormField(
+                          controller: _passwordController,
+                          obscureText: !_isPasswordVisible,
+                          decoration: InputDecoration(
+                              labelText: "Password",
+                              suffixIcon: IconButton(
+                                icon: Icon(_isPasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off_outlined),
+                                onPressed: _toggleVisibility,
+                              )),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your password';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        TextFormField(
+                          controller: _confirmPasswordController,
+                          obscureText: !_isPasswordVisible,
+                          decoration: InputDecoration(
+                              labelText: "Confirm Password",
+                              suffixIcon: IconButton(
+                                icon: Icon(_isPasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off_outlined),
+                                onPressed: _toggleVisibility,
+                              )),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please confirm your password';
+                            }
+                            if (value != _passwordController.text) {
+                              return 'Passwords do not match';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        SizedBox(
+                          width: deviceSize.width * 0.65,
+                          child: PrimaryButton(
+                            labelText: "Sign Up",
+                            onPressed: () async {
+                              final userName = _usernameController.text;
+                              final email = _emailController.text;
+                              final password = _passwordController.text;
+                              final confirmPassword =
+                                  _confirmPasswordController.text;
+                              if (userName.isEmpty ||
+                                  email.isEmpty ||
+                                  password.isEmpty ||
+                                  confirmPassword.isEmpty) {
+                                setState(() {
+                                  showErrors = true;
+                                });
+                                return;
+                              }
+                              if (confirmPassword != password) return;
+                              final String? error;
+                              final String success;
+                              context.loaderOverlay.show();
+                              (error, success) = await Networking.registerUser(
+                                Register(
+                                  username: userName,
+                                  email: email,
+                                  password: password,
+                                ),
+                              );
+                              context.loaderOverlay.hide();
+                              if (error != null) {
+                                MyAlert.showWarning(context, error);
+                              } else {
+                                MyAlert.showSuccess(context, success);
+                                Navigator.pushReplacementNamed(
+                                    context, LoginUi.routeName);
+                              }
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
-              ],
+                  // const Spacer(),
+                  SizedBox(
+                    height: 20,
+                    child: Center(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pushReplacementNamed(
+                              context, LoginUi.routeName);
+                        },
+                        child: const Text("Already have an account? Log In"),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
