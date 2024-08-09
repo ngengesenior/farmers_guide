@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class WeatherUi extends StatefulWidget {
   const WeatherUi({super.key});
-
+  static const routeName = '/home';
   @override
   State<WeatherUi> createState() => _WeatherUiState();
 }
