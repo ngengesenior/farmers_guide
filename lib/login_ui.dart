@@ -4,6 +4,7 @@ import 'package:farmers_guide/models/login_request.dart';
 import 'package:farmers_guide/networking/networking.dart';
 import 'package:farmers_guide/signup_ui.dart';
 import 'package:farmers_guide/utils.dart';
+import 'package:farmers_guide/weather_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:loading_indicator/loading_indicator.dart';
@@ -59,7 +60,7 @@ class _LoginUiState extends State<LoginUi> {
             padding: EdgeInsets.all(deviceSize.width * 0.06),
             child: Form(
               key: _formKey,
-               autovalidateMode: showErrors ? AutovalidateMode.always : null,
+              autovalidateMode: showErrors ? AutovalidateMode.always : null,
               child: Column(
                 children: [
                   SizedBox(
@@ -142,7 +143,7 @@ class _LoginUiState extends State<LoginUi> {
                           } else {
                             MyAlert.showSuccess(context, success);
                             Navigator.pushReplacementNamed(
-                                context, LoginUi.routeName);
+                                context, WeatherUi.routeName);
                           }
                         },
                         labelText: "Log In",
