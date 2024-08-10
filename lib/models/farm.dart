@@ -1,5 +1,5 @@
 class Farm {
-  final String id;
+  final int id;
   final String name;
   final double size;
   final double latitude;
@@ -20,11 +20,11 @@ class Farm {
   // Factory method to create a Farm from JSON
   factory Farm.fromJson(Map<String, dynamic> json) {
     return Farm(
-      id: json['id'] ?? '',
+      id: json['id'] ?? 0,
       name: json['name'],
-      size: double.parse(json['size']),
-      latitude: double.parse(json['latitude']),
-      longitude: double.parse(json['longitude']),
+      size: double.parse(json['size'].toString()),
+      latitude: double.parse(json['latitude'].toString()),
+      longitude: double.parse(json['longitude'].toString()),
       createdAt: json['created_at'] ?? '',
       updatedAt: json['updated_at'] ?? '',
     );
@@ -45,7 +45,7 @@ class Farm {
 
   // Method to create a copy of the Farm with updated values
   Farm copyWith({
-    String? id,
+    int? id,
     String? name,
     double? size,
     double? latitude,
