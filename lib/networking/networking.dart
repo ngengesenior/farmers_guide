@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:farmers_guide/constants/app_url.dart';
-import 'package:farmers_guide/models/farm.dart';
 import 'package:farmers_guide/models/login_request.dart';
 import 'package:farmers_guide/models/token.dart';
 import 'package:farmers_guide/services/token_service.dart';
@@ -68,31 +67,6 @@ class Networking {
       } catch (e) {
         detail = 'Username or password incorrect';
       }
-      return (detail ?? 'Server error', '');
-    }
-  }
-
-  static Future<(String? error, String success)> registerFarm(Farm farm) async {
-    // Convert Register object to JSON
-    final Map<String, dynamic> registerJson = farm.toJson();
-
-    // Make the POST request
-    final http.Response response = await http.post(
-      Uri.parse("$baseUrl/farms"),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(registerJson),
-    );
-
-    // Check if the request was successful
-    if (response.isSuccessful) {
-      // Parse the response body into a RegisterResponse object
-      final Map<String, dynamic> _ = jsonDecode(response.body);
-      return (null, 'Farm successfully created');
-    } else {
-      final responseBody = jsonDecode(response.body);
-      final String? detail = responseBody['detail'];
       return (detail ?? 'Server error', '');
     }
   }
