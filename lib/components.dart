@@ -68,6 +68,10 @@ class CurrentEssentialWeatherCard extends ConsumerWidget {
                   description: 'Humidity',
                   value: '${forcast?.humidity ?? 0}%',
                 ),
+                // WeatherItem(
+                //   description: 'Precipitation',
+                //   value: '${forcast?.precipitation ?? 0}',
+                // ),
               ],
             ),
             const SizedBox(

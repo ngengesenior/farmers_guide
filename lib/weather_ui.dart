@@ -1,5 +1,16 @@
 import 'package:farmers_guide/components.dart';
+import 'package:farmers_guide/farm_create_ui.dart';
+import 'package:farmers_guide/models/farm.dart';
+import 'package:farmers_guide/models/weather.dart';
+import 'package:farmers_guide/networking/farm_remote.dart';
+import 'package:farmers_guide/services/providers.dart';
+import 'package:farmers_guide/services/user_state.dart';
+import 'package:farmers_guide/services/weather_condition.dart';
+import 'package:farmers_guide/utils.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_indicator/loading_indicator.dart';
 
 class WeatherUi extends StatefulWidget {
   const WeatherUi({super.key});
@@ -9,16 +20,25 @@ class WeatherUi extends StatefulWidget {
 }
 
 class _WeatherUiState extends State<WeatherUi> {
-  bool expanded = false;
+  List<Farm> farms = [];
+  Farm? selectedFarm;
+  Placemark? location;
 
-  void expandToggle() {
-    setState(() {
-      expanded = !expanded;
+  @override
+  void initState() {
+    super.initState();
+    farms = userMeState.value?.farms ?? [];
+    selectedFarm = farms.isEmpty ? null : farms[0];
+    Future.microtask(() async {
+      List<Placemark> placemarks = await placemarkFromCoordinates(
+          selectedFarm?.latitude ?? 0, selectedFarm?.longitude ?? 0);
+      location = placemarks[0];
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final user = userMeState.value;
     final Size deviceSize = MediaQuery.of(context).size;
     return Scaffold(
       body: SafeArea(
@@ -37,7 +57,9 @@ class _WeatherUiState extends State<WeatherUi> {
                           children: [
                             SizedBox(
                                 width: deviceSize.width,
-                                child: const BigTitleText(text: "Hello Kefeh")),
+                                child: BigTitleText(
+                                    text:
+                                        "Hello ${user?.username ?? 'there'}")),
                             const Text(
                               "I am your AI assistant to help you with agricultural insights",
                             )
@@ -63,174 +85,237 @@ class _WeatherUiState extends State<WeatherUi> {
                 ],
               ), // End of top header
               const SizedBox(
-                height: 32,
+                height: 18,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: DropdownButtonFormField(
+                      hint: Text(
+                        selectedFarm?.name ?? 'Farms',
+                        style: const TextStyle(
+                          color: Colors.black38,
+                        ),
+                      ),
+                      items: farms
+                          .map(
+                            (toElement) => DropdownMenuItem(
+                              value: toElement,
+                              child: Text(
+                                toElement.name,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          selectedFarm = value;
+                        });
+                      },
+                      validator: (value) {
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  SizedBox(
+                    height: 56,
+                    child: PrimaryButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, CreateFarmUI.routeName);
+                      },
+                      labelText: '+ add farm',
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 18,
               ),
               Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: 460,
-                        child: Column(
+                child: Consumer(builder: (context, ref, _) {
+                  return FutureBuilder(
+                      future: FarmRemote.fetchFarmWeatherForcast(
+                        farmId: selectedFarm?.id ?? 0,
+                        numberOfDays: 3,
+                      ),
+                      builder: (context, asyncSnapshot) {
+                        if (asyncSnapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: SizedBox.square(
+                              dimension: 60,
+                              child: LoadingIndicator(
+                                indicatorType: Indicator.lineScale,
+                                colors: [Colors.black],
+                              ),
+                            ),
+                          );
+                        }
+                        if (asyncSnapshot.hasError) {
+                          return const Text("No weather forcasts found");
+                        }
+                        final List<Weather> forcasts =
+                            asyncSnapshot.data?.$2 ?? [];
+                        final firstForcast =
+                            forcasts.isEmpty ? null : forcasts[0];
+                        if (firstForcast != null) {
+                          Future.microtask(() {
+                            ref
+                                .watch(selectedForcast.notifier)
+                                .update((state) => firstForcast);
+                          });
+                        }
+                        return Column(
                           children: [
-                            const Text(
-                              "Yaounde",
-                              style: TextStyle(fontSize: 20),
-                            ),
-                            const Text(
-                              'Cameroon',
-                              style: TextStyle(
-                                fontSize: 40,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
                             Expanded(
-                              child: Column(
-                                children: [
-                                  const Text(
-                                    "Now",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  Expanded(
-                                    child: CurrentEssentialWeatherCard(
-                                      expanded: expanded,
-                                      onExpand: expandToggle,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 32),
-                            AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 600),
-                              child: expanded
-                                  ? const SizedBox.shrink()
-                                  : Column(
-                                      children: [
-                                        const Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            PeriodSelectionItem(title: "Days"),
-                                          ],
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            vertical: 8.0,
-                                            horizontal: 20,
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    SizedBox(
+                                      height: 460,
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            location?.locality ?? 'Street',
+                                            style:
+                                                const TextStyle(fontSize: 20),
                                           ),
-                                          child: SizedBox(
-                                            height: 140,
-                                            child: ListView(
-                                              scrollDirection: Axis.horizontal,
-                                              children: const [
-                                                WeatherWidget(
-                                                  key: ValueKey('Today'),
-                                                  activeKey: ValueKey('Today'),
-                                                  day: 'Today',
-                                                  temperature: '20',
-                                                  weather: 'Sunny',
-                                                ),
-                                                WeatherWidget(
-                                                  key: ValueKey('Tomorrow'),
-                                                  activeKey: ValueKey('Today'),
-                                                  day: 'Tomorrow',
-                                                  temperature: '26',
-                                                  weather: 'Rainy',
-                                                ),
-                                                WeatherWidget(
-                                                  key: ValueKey('Friday'),
-                                                  activeKey: ValueKey('Today'),
-                                                  day: 'Friday',
-                                                  temperature: '2',
-                                                  weather: 'Snowy',
+                                          Text(
+                                            location?.country ?? 'Country',
+                                            style: const TextStyle(
+                                              fontSize: 40,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: Column(
+                                              children: [
+                                                Consumer(
+                                                    builder: (context, ref, _) {
+                                                  final dateString = ref
+                                                      .watch(selectedForcast)
+                                                      ?.date;
+
+                                                  final date =
+                                                      dateString == null
+                                                          ? DateTime.now()
+                                                          : DateTime.parse(
+                                                              dateString);
+                                                  return Text(
+                                                    Utils.getFormattedDate(
+                                                        date),
+                                                    style: const TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  );
+                                                }),
+                                                const Expanded(
+                                                  child:
+                                                      CurrentEssentialWeatherCard(),
                                                 ),
                                               ],
                                             ),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        height: 240,
-                        padding: const EdgeInsets.all(20),
-                        margin: const EdgeInsets.symmetric(vertical: 20),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: Colors.black12,
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Explore plant/soil health",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleLarge!
-                                      .copyWith(
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                ),
-                                const SizedBox(height: 12),
-                                const Text(
-                                  "Take a picture  or upload image of your plant or soil and get AI insights about the health and properties",
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                              ],
-                            ),
-                            Column(
-                              children: [
-                                OutlinedButton(
-                                  onPressed: () {},
-                                  style: ButtonStyle(
-                                    padding: WidgetStateProperty.all(
-                                      const EdgeInsets.symmetric(
-                                          vertical: 20, horizontal: 72),
-                                    ),
-                                    shape: WidgetStateProperty.all(
-                                      RoundedRectangleBorder(
-                                        side: const BorderSide(),
-                                        borderRadius: BorderRadius.circular(20),
+                                          const SizedBox(height: 32),
+                                          WeatherSection(forcasts),
+                                        ],
                                       ),
                                     ),
-                                  ),
-                                  child: Text(
-                                    "Explore",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleLarge!
-                                        .copyWith(
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                  ),
+                                    Container(
+                                      height: 240,
+                                      padding: const EdgeInsets.all(20),
+                                      margin: const EdgeInsets.symmetric(
+                                          vertical: 20),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: Colors.black12,
+                                      ),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "Explore plant/soil health",
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleLarge!
+                                                    .copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                              ),
+                                              const SizedBox(height: 12),
+                                              const Text(
+                                                "Take a picture  or upload image of your plant or soil and get AI insights about the health and properties",
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                            ],
+                                          ),
+                                          Column(
+                                            children: [
+                                              OutlinedButton(
+                                                onPressed: () {},
+                                                style: ButtonStyle(
+                                                  padding:
+                                                      WidgetStateProperty.all(
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 20,
+                                                        horizontal: 72),
+                                                  ),
+                                                  shape:
+                                                      WidgetStateProperty.all(
+                                                    RoundedRectangleBorder(
+                                                      side: const BorderSide(),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20),
+                                                    ),
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  "Explore",
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .titleLarge!
+                                                      .copyWith(
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                ),
+                                              ),
+                                              const SizedBox(height: 8),
+                                              GestureDetector(
+                                                onTap: () {},
+                                                child: const Text(
+                                                  "Previous Analysis",
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                    decoration: TextDecoration
+                                                        .underline,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  ],
                                 ),
-                                const SizedBox(height: 8),
-                                GestureDetector(
-                                  onTap: () {},
-                                  child: const Text(
-                                    "Previous Analysis",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      decoration: TextDecoration.underline,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
                           ],
-                        ),
-                      )
-                    ],
-                  ),
-                ),
+                        );
+                      });
+                }),
               )
             ],
           ),
@@ -240,22 +325,62 @@ class _WeatherUiState extends State<WeatherUi> {
   }
 }
 
-class WeatherWidget extends StatelessWidget {
-  const WeatherWidget({
+class WeatherSection extends ConsumerWidget {
+  const WeatherSection(
+    this.forcasts, {
     super.key,
-    required this.activeKey,
-    required this.day,
-    required this.temperature,
-    required this.weather,
   });
 
-  final String day;
-  final String temperature;
-  final String weather;
-  final Key activeKey;
+  final List<Weather> forcasts;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 600),
+      child: ref.watch(expandProvider)
+          ? const SizedBox.shrink()
+          : Column(
+              children: [
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    PeriodSelectionItem(title: "Days"),
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8.0,
+                    horizontal: 20,
+                  ),
+                  child: SizedBox(
+                    height: 140,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: forcasts.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return WeatherWidget(
+                          forcast: forcasts[index],
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+    );
+  }
+}
+
+class WeatherWidget extends ConsumerWidget {
+  const WeatherWidget({
+    super.key,
+    required this.forcast,
+  });
+
+  final Weather forcast;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     const activeTextStyle = TextStyle(
       fontWeight: FontWeight.w600,
       fontSize: 16,
@@ -264,38 +389,50 @@ class WeatherWidget extends StatelessWidget {
     const inactiveTextStyle = TextStyle(
       fontSize: 12,
     );
-    return Container(
-      width: 90,
-      height: 140,
-      padding: const EdgeInsets.symmetric(vertical: 14),
-      margin: const EdgeInsets.symmetric(horizontal: 10),
-      decoration: activeKey == key
-          ? BoxDecoration(
-              borderRadius: BorderRadius.circular(10), border: Border.all())
-          : BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: const Color.fromARGB(13, 0, 0, 0))),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: Colors.black12,
-              borderRadius: BorderRadius.circular(40),
+
+    final weatherCondition = getWeatherCondition(weather: forcast);
+    final date = DateTime.parse(forcast.date);
+    return GestureDetector(
+      onTap: () {
+        ref.watch(selectedForcast.notifier).update((state) => forcast);
+      },
+      child: Container(
+        width: 90,
+        height: 140,
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        margin: const EdgeInsets.symmetric(horizontal: 10),
+        decoration: ref.watch(selectedForcast)?.date == forcast.date
+            ? BoxDecoration(
+                borderRadius: BorderRadius.circular(10), border: Border.all())
+            : BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color.fromARGB(13, 0, 0, 0))),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: Colors.black12,
+                borderRadius: BorderRadius.circular(40),
+              ),
+              child: Icon(
+                weatherCondition.icon,
+                size: 30,
+              ),
             ),
-            child: const Icon(
-              Icons.sunny_snowing,
-              size: 30,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(day,
-              style: activeKey == key ? activeTextStyle : inactiveTextStyle),
-          Text('$temperature °C',
-              style: activeKey == key ? inactiveTextStyle : activeTextStyle),
-        ],
+            const SizedBox(height: 2),
+            Text(Utils.getFormattedDate(date),
+                style: ref.watch(selectedForcast)?.date == forcast.date
+                    ? activeTextStyle
+                    : inactiveTextStyle),
+            Text('${forcast.temperatureHigh} °C',
+                style: ref.watch(selectedForcast)?.date == forcast.date
+                    ? inactiveTextStyle
+                    : activeTextStyle),
+          ],
+        ),
       ),
     );
   }

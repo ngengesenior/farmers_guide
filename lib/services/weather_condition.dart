@@ -22,12 +22,12 @@ WeatherCondition getWeatherCondition({required Weather weather}) {
   }
 
   // Check for rainy weather
-  if (weather.precipitation > 0 && weather.temperatureLow > 0) {
+  if (weather.precipitation > 0 && weather.temperatureHigh > 0) {
     return WeatherCondition.rainy;
   }
 
   // Check for snowy weather
-  if (weather.precipitation > 0 && weather.temperatureLow <= 0) {
+  if (weather.precipitation > 0 && weather.temperatureHigh <= 0) {
     return WeatherCondition.snowy;
   }
 

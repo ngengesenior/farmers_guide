@@ -5,10 +5,11 @@ import 'package:farmers_guide/services/user_state.dart';
 import 'package:farmers_guide/signup_ui.dart';
 import 'package:farmers_guide/weather_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {

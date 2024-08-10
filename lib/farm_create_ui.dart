@@ -1,7 +1,9 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:farmers_guide/alerts.dart';
 import 'package:farmers_guide/components.dart';
 import 'package:farmers_guide/models/farm.dart';
-import 'package:farmers_guide/networking/networking.dart';
+import 'package:farmers_guide/networking/farm_remote.dart';
 import 'package:farmers_guide/utils.dart';
 import 'package:farmers_guide/weather_ui.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +38,7 @@ class _CreateFarmUIState extends State<CreateFarmUI> {
   Widget build(BuildContext context) {
     Size deviceSize = MediaQuery.of(context).size;
     return Scaffold(
+      appBar: AppBar(),
       body: SafeArea(
         child: LoaderOverlay(
           useDefaultLoading: false,
@@ -185,7 +188,7 @@ class _CreateFarmUIState extends State<CreateFarmUI> {
       "size": hecters.toString()
     };
 
-    (error, success) = await Networking.registerFarm(
+    (error, success) = await FarmRemote.registerFarm(
       Farm.fromJson(farmJson),
     );
     context.loaderOverlay.hide();
