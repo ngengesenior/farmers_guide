@@ -1,6 +1,8 @@
+import 'package:farmers_guide/services/providers.dart';
 import 'package:farmers_guide/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class PrimaryButton extends StatelessWidget {
   final VoidCallback onPressed;
@@ -39,41 +41,32 @@ class BigTitleText extends StatelessWidget {
   }
 }
 
-class CurrentEssentialWeatherCard extends StatefulWidget {
-  const CurrentEssentialWeatherCard(
-      {super.key, this.onExpand, this.expanded = false});
+class CurrentEssentialWeatherCard extends ConsumerWidget {
+  const CurrentEssentialWeatherCard({super.key});
 
-  final void Function()? onExpand;
-  final bool expanded;
   @override
-  State<CurrentEssentialWeatherCard> createState() =>
-      _CurrentEssentialWeatherCardState();
-}
-
-class _CurrentEssentialWeatherCardState
-    extends State<CurrentEssentialWeatherCard> {
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final forcast = ref.watch(selectedForcast);
     return Card(
       color: Theme.of(context).colorScheme.primary,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 18.0, horizontal: 24),
         child: Column(
           children: [
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 WeatherItem(
                   description: 'Feels like',
-                  value: '20°C',
+                  value: '${forcast?.temperatureHigh ?? 0}°C',
                 ),
                 WeatherItem(
-                  description: 'Air Pressure',
-                  value: '110mb',
+                  description: 'Wind speed',
+                  value: '${forcast?.windSpeed ?? 0}m/s',
                 ),
                 WeatherItem(
                   description: 'Humidity',
-                  value: '68%',
+                  value: '${forcast?.humidity ?? 0}%',
                 ),
               ],
             ),
@@ -81,7 +74,9 @@ class _CurrentEssentialWeatherCardState
               height: 20,
             ),
             GestureDetector(
-              onTap: widget.onExpand,
+              onTap: () {
+                ref.watch(expandProvider.notifier).update((state) => !state);
+              },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -92,7 +87,7 @@ class _CurrentEssentialWeatherCardState
                         ),
                   ),
                   Icon(
-                    widget.expanded
+                    ref.watch(expandProvider)
                         ? CupertinoIcons.chevron_up_circle
                         : CupertinoIcons.chevron_down_circle,
                     color: Colors.white,
@@ -105,7 +100,7 @@ class _CurrentEssentialWeatherCardState
                 duration: const Duration(milliseconds: 500),
                 switchInCurve: Curves.easeIn,
                 switchOutCurve: Curves.easeOut,
-                child: widget.expanded
+                child: ref.watch(expandProvider)
                     ? ListView(
                         children: const [
                           MoreItem(
