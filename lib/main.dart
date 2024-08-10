@@ -1,14 +1,20 @@
+import 'package:camera/camera.dart';
 import 'package:farmers_guide/app_theme.dart';
-import 'package:farmers_guide/farm_create_ui.dart';
-import 'package:farmers_guide/login_ui.dart';
+import 'package:farmers_guide/constants/app_url.dart';
+import 'package:farmers_guide/ui/camera_diagnosis_ui.dart';
+import 'package:farmers_guide/ui/farm_create_ui.dart';
+import 'package:farmers_guide/ui/login_ui.dart';
 import 'package:farmers_guide/services/user_state.dart';
-import 'package:farmers_guide/signup_ui.dart';
-import 'package:farmers_guide/weather_ui.dart';
+import 'package:farmers_guide/ui/signup_ui.dart';
+import 'package:farmers_guide/ui/weather_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  cameras = await availableCameras();
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -27,6 +33,7 @@ class MyApp extends StatelessWidget {
         LoginUi.routeName: (_) => const LoginUi(),
         SignUpUi.routeName: (_) => const SignUpUi(),
         CreateFarmUI.routeName: (_) => const CreateFarmUI(),
+        CameraDiagnosisUi.routeName: (_) => const CameraDiagnosisUi(),
       },
       home: FutureBuilder(
         future: userMeState.initialise(),
