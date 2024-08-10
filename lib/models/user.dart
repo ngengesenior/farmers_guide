@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:farmers_guide/models/farm.dart';
+
 class User {
   User({
     required this.id,
@@ -15,7 +17,7 @@ class User {
   final String email;
   final String createdAt;
   final String updatedAt;
-  final List<dynamic> farms;
+  final List<Farm> farms;
 
   factory User.fromJson(String str) => User.fromMap(json.decode(str));
 
@@ -27,7 +29,7 @@ class User {
         email: json["email"],
         createdAt: json["created_at"],
         updatedAt: json["updated_at"],
-        farms: json["farms"],
+        farms: (json["farms"] as List).map((e) => Farm.fromJson(e)).toList(),
       );
 
   Map<String, dynamic> toMap() => {
