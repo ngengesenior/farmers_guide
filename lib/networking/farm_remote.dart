@@ -3,23 +3,18 @@ import 'dart:convert';
 import 'package:farmers_guide/constants/app_url.dart';
 import 'package:farmers_guide/models/farm.dart';
 import 'package:farmers_guide/models/weather.dart';
-import 'package:farmers_guide/services/token_service.dart';
+import 'package:farmers_guide/networking/http_client.dart';
 import 'package:farmers_guide/services/user_state.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 
 abstract class FarmRemote {
   static Future<(String? error, String success)> registerFarm(Farm farm) async {
-    final token = await TokenService.getAccessToken();
     // Convert Register object to JSON
     final Map<String, dynamic> registerJson = farm.toJson();
 
     // Make the POST request
-    final http.Response response = await http.post(
+    final Response response = await httpClient.post(
       Uri.parse("$baseUrl/farms"),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': "Bearer $token",
-      },
       body: jsonEncode(registerJson),
     );
 
@@ -39,14 +34,9 @@ abstract class FarmRemote {
   static Future<(String? error, List<Farm>? farms)> fetchFarms() async {
     // Convert Register object to JSON
 
-    final token = await TokenService.getAccessToken();
     // Make the POST request
-    final http.Response response = await http.get(
+    final Response response = await httpClient.get(
       Uri.parse("$baseUrl/farms"),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': "Bearer $token",
-      },
     );
 
     // Check if the request was successful
@@ -67,16 +57,10 @@ abstract class FarmRemote {
       fetchFarmWeatherForcast(
           {required int farmId, required int numberOfDays}) async {
     // Convert Register object to JSON
-
-    final token = await TokenService.getAccessToken();
     // Make the POST request
-    final http.Response response = await http.get(
+    final Response response = await httpClient.get(
       Uri.parse(
           "$baseUrl/farm-weather-forecast?farm_id=$farmId&days=$numberOfDays"),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': "Bearer $token",
-      },
     );
 
     // Check if the request was successful
@@ -95,7 +79,7 @@ abstract class FarmRemote {
   }
 }
 
-extension on http.Response {
+extension on Response {
   bool get isSuccessful => (statusCode >= 200 && statusCode <= 299);
   bool get isClientError => (statusCode >= 400 && statusCode <= 499);
   bool get isServerError => (statusCode >= 500 && statusCode <= 599);
