@@ -1,4 +1,4 @@
-import 'package:farmers_guide/networking/interceptor.dart';
+import 'package:farmers_guide/networking/auth_interceptor.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 
 class _HttpClient {
