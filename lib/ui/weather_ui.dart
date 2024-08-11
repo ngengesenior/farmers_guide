@@ -9,6 +9,7 @@ import 'package:farmers_guide/services/providers.dart';
 import 'package:farmers_guide/services/user_state.dart';
 import 'package:farmers_guide/services/weather_condition.dart';
 import 'package:farmers_guide/ui/login_ui.dart';
+import 'package:farmers_guide/ui/user_account.dart';
 import 'package:farmers_guide/ui/widgets/crops_section.dart';
 import 'package:farmers_guide/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -72,17 +73,22 @@ class _WeatherUiState extends ConsumerState<WeatherUi> {
                         ),
                       ),
                       const Spacer(),
-                      Container(
-                        height: 60,
-                        width: 60,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(60),
-                          border: Border.all(color: Colors.black, width: 2),
-                        ),
-                        child: const Icon(
-                          Icons.person_outline_outlined,
-                          size: 40,
-                          color: Colors.black,
+                      InkWell(
+                        onTap: () {
+                          Navigator.pushNamed(context, UserAccountUi.routeName);
+                        },
+                        child: Container(
+                          height: 60,
+                          width: 60,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(60),
+                            border: Border.all(color: Colors.black, width: 2),
+                          ),
+                          child: const Icon(
+                            Icons.person_outline_outlined,
+                            size: 40,
+                            color: Colors.black,
+                          ),
                         ),
                       ),
                     ],
@@ -204,7 +210,7 @@ class _WeatherUiState extends ConsumerState<WeatherUi> {
                                               Text(
                                                 location?.country ?? 'Country',
                                                 style: const TextStyle(
-                                                  fontSize: 40,
+                                                  fontSize: 28,
                                                   fontWeight: FontWeight.w500,
                                                 ),
                                               ),

@@ -8,6 +8,7 @@ import 'package:farmers_guide/ui/farm_create_ui.dart';
 import 'package:farmers_guide/ui/login_ui.dart';
 import 'package:farmers_guide/services/user_state.dart';
 import 'package:farmers_guide/ui/signup_ui.dart';
+import 'package:farmers_guide/ui/user_account.dart';
 import 'package:farmers_guide/ui/weather_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,6 +39,7 @@ class MyApp extends StatelessWidget {
         CameraDiagnosisUi.routeName: (_) => const CameraDiagnosisUi(),
         CropCreateUi.routeName: (_) => const CropCreateUi(),
         CropDiseaseDiagnosisUi.routeName: (_) => const CropDiseaseDiagnosisUi(),
+        UserAccountUi.routeName: (_) => const UserAccountUi()
       },
       home: FutureBuilder(
         future: userMeState.initialise(),
