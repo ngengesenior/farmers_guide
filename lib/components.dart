@@ -1,6 +1,5 @@
 import 'package:farmers_guide/models/crop_advice.dart';
 import 'package:farmers_guide/services/providers.dart';
-import 'package:farmers_guide/ui/login_ui.dart';
 import 'package:farmers_guide/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

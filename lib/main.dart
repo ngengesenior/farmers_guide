@@ -2,6 +2,7 @@ import 'package:camera/camera.dart';
 import 'package:farmers_guide/app_theme.dart';
 import 'package:farmers_guide/constants/app_url.dart';
 import 'package:farmers_guide/ui/camera_diagnosis_ui.dart';
+import 'package:farmers_guide/ui/crop_create_ui.dart';
 import 'package:farmers_guide/ui/farm_create_ui.dart';
 import 'package:farmers_guide/ui/login_ui.dart';
 import 'package:farmers_guide/services/user_state.dart';
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
         SignUpUi.routeName: (_) => const SignUpUi(),
         CreateFarmUI.routeName: (_) => const CreateFarmUI(),
         CameraDiagnosisUi.routeName: (_) => const CameraDiagnosisUi(),
+        CropCreateUi.routeName: (_) => const CropCreateUi(),
       },
       home: FutureBuilder(
         future: userMeState.initialise(),
