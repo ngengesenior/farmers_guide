@@ -21,7 +21,7 @@ class MyInterceptor extends InterceptorContract {
     if (response.statusCode == 401) {
       final prefs = await SharedPreferences.getInstance();
       prefs.clear();
-      await userMeState.initialise();
+      await userMeState.initialise(isReset: true);
     }
     return response;
   }
