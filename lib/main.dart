@@ -3,6 +3,7 @@ import 'package:farmers_guide/app_theme.dart';
 import 'package:farmers_guide/constants/app_url.dart';
 import 'package:farmers_guide/ui/camera_diagnosis_ui.dart';
 import 'package:farmers_guide/ui/crop_create_ui.dart';
+import 'package:farmers_guide/ui/crop_disease_diagnosis_ui.dart';
 import 'package:farmers_guide/ui/farm_create_ui.dart';
 import 'package:farmers_guide/ui/login_ui.dart';
 import 'package:farmers_guide/services/user_state.dart';
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
         CreateFarmUI.routeName: (_) => const CreateFarmUI(),
         CameraDiagnosisUi.routeName: (_) => const CameraDiagnosisUi(),
         CropCreateUi.routeName: (_) => const CropCreateUi(),
+        CropDiseaseDiagnosisUi.routeName: (_) => const CropDiseaseDiagnosisUi(),
       },
       home: FutureBuilder(
         future: userMeState.initialise(),

@@ -2,9 +2,12 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:farmers_guide/constants/app_url.dart';
+import 'package:farmers_guide/services/providers.dart';
+import 'package:farmers_guide/ui/crop_disease_diagnosis_ui.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 const _tempImagePath = 'Temp';
@@ -105,45 +108,58 @@ class _CameraAppState extends State<CameraDiagnosisUi> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
                                 children: [
-                                  OutlinedButton(
-                                    onPressed: () async {
-                                      final image =
-                                          await controller.takePicture();
-                                      setState(() {
-                                        imagePath = image.path;
-                                      });
-                                    },
-                                    style: OutlinedButton.styleFrom(
-                                      side: const BorderSide(
-                                          width: 2.0, color: Colors.white),
-                                      shape: const CircleBorder(),
-                                      // fixedSize: const Size.square(60),
-                                    ),
-                                    child: Container(
-                                      margin: imagePath.isNotEmpty
-                                          ? null
-                                          : const EdgeInsets.all(6),
-                                      child: Container(
-                                        height: 50,
-                                        width: 50,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(60),
-                                          border: Border.all(
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                        child: imagePath.isNotEmpty
-                                            ? const Icon(
-                                                Icons.check,
-                                                size: 32,
-                                                color: Colors.black,
-                                              )
-                                            : null,
+                                  Consumer(builder: (context, ref, _) {
+                                    return OutlinedButton(
+                                      onPressed: (imagePath.isEmpty)
+                                          ? () async {
+                                              final image = await controller
+                                                  .takePicture();
+                                              setState(() {
+                                                imagePath = image.path;
+                                              });
+                                            }
+                                          : () {
+                                              ref
+                                                  .watch(selectedImage.notifier)
+                                                  .update((state) => imagePath);
+                                              Navigator.pushReplacementNamed(
+                                                context,
+                                                CropDiseaseDiagnosisUi
+                                                    .routeName,
+                                              );
+                                            },
+                                      style: OutlinedButton.styleFrom(
+                                        side: const BorderSide(
+                                            width: 2.0, color: Colors.white),
+                                        shape: const CircleBorder(),
+                                        // fixedSize: const Size.square(60),
                                       ),
-                                    ),
-                                  ),
+                                      child: Container(
+                                        margin: imagePath.isNotEmpty
+                                            ? null
+                                            : const EdgeInsets.all(6),
+                                        child: Container(
+                                          height: 50,
+                                          width: 50,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(60),
+                                            border: Border.all(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          child: imagePath.isNotEmpty
+                                              ? const Icon(
+                                                  Icons.check,
+                                                  size: 32,
+                                                  color: Colors.black,
+                                                )
+                                              : null,
+                                        ),
+                                      ),
+                                    );
+                                  }),
                                   if (imagePath.isNotEmpty)
                                     const Text(
                                       "Send",

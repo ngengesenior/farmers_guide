@@ -1,3 +1,4 @@
+import 'package:farmers_guide/alerts.dart';
 import 'package:farmers_guide/components.dart';
 import 'package:farmers_guide/ui/camera_diagnosis_ui.dart';
 import 'package:farmers_guide/ui/farm_create_ui.dart';
@@ -293,6 +294,13 @@ class _WeatherUiState extends ConsumerState<WeatherUi> {
                                             children: [
                                               OutlinedButton(
                                                 onPressed: () {
+                                                  final crop =
+                                                      ref.watch(selectedCrop);
+                                                  if (crop == null) {
+                                                    MyAlert.showWarning(context,
+                                                        "Select a crop to proceed");
+                                                    return;
+                                                  }
                                                   Navigator.pushNamed(
                                                       context,
                                                       CameraDiagnosisUi
@@ -327,17 +335,17 @@ class _WeatherUiState extends ConsumerState<WeatherUi> {
                                                 ),
                                               ),
                                               const SizedBox(height: 8),
-                                              GestureDetector(
-                                                onTap: () {},
-                                                child: const Text(
-                                                  "Previous Analysis",
-                                                  style: TextStyle(
-                                                    fontSize: 14,
-                                                    decoration: TextDecoration
-                                                        .underline,
-                                                  ),
-                                                ),
-                                              ),
+                                              // GestureDetector(
+                                              //   onTap: () {},
+                                              //   child: const Text(
+                                              //     "Previous Analysis",
+                                              //     style: TextStyle(
+                                              //       fontSize: 14,
+                                              //       decoration: TextDecoration
+                                              //           .underline,
+                                              //     ),
+                                              //   ),
+                                              // ),
                                             ],
                                           ),
                                         ],

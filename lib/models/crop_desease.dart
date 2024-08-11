@@ -9,7 +9,7 @@ class CropDisease {
   final String causesOfDisease;
   final String otherThingsToNote;
   final double confidenceLevel;
-  final List<String> images;
+  final List<dynamic> images;
 
   CropDisease({
     required this.farmId,
@@ -38,7 +38,7 @@ class CropDisease {
       causesOfDisease: json['causes_of_disease'] ?? '',
       otherThingsToNote: json['other_things_to_note'] ?? '',
       confidenceLevel: json['confidence_level'] ?? '',
-      images: json['images'] ?? '',
+      images: json['images'] ?? [],
     );
   }
 

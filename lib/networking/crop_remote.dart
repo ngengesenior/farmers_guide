@@ -1,10 +1,12 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart' as other;
 import 'package:farmers_guide/constants/app_url.dart';
 import 'package:farmers_guide/models/crop.dart';
 import 'package:farmers_guide/models/crop_advice.dart';
 import 'package:farmers_guide/models/crop_desease.dart';
 import 'package:farmers_guide/networking/http_client.dart';
+import 'package:farmers_guide/services/token_service.dart';
 import 'package:farmers_guide/services/user_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
@@ -56,24 +58,44 @@ abstract class CropRemote {
   }
 
   static Future<(String? error, CropDisease? cropDisease)> fetchCropDisease(
-      {required int cropId, required int numberOfDays}) async {
+      {required int cropId,
+      required String userPrompt,
+      required String imagePath}) async {
     // Convert Register object to JSON
     // Make the POST request
-    final Response response = await httpClient.get(
-      Uri.parse(
-          "$baseUrl/crop-diseases/detect?farm_id=$cropId&days=$numberOfDays"),
-    );
+    try {
+      final token = await TokenService.getAccessToken();
+      final dio = other.Dio();
 
-    // Check if the request was successful
-    if (response.isSuccessful) {
+      var postUri = Uri.parse(
+          "$baseUrl/crop-diseases/detect?crop_id=$cropId&user_prompt=$userPrompt");
+
+      other.FormData formData = other.FormData.fromMap(
+          {"files": await other.MultipartFile.fromFile(imagePath)});
+      final other.Response response = await dio.postUri(
+        postUri,
+        data: formData,
+        options: other.Options(
+          headers: {
+            'authorization': 'Bearer $token',
+          },
+        ),
+      );
+
+      // Check if the request was successful
+
       // Parse the response body into a RegisterResponse object
-      final Map<String, dynamic> diseaseJson = jsonDecode(response.body);
+      final Map<String, dynamic> diseaseJson = response.data;
       final CropDisease cropDisease = CropDisease.fromJson(diseaseJson);
       return (null, cropDisease);
-    } else {
-      final responseBody = jsonDecode(response.body);
-      final String? detail = responseBody['detail'];
-      return (detail ?? 'Server error', null);
+    } on other.DioException catch (e) {
+      final response = e.response;
+      if (response != null) {
+        final responseBody = jsonDecode(response.data);
+        final String? detail = responseBody['detail'];
+        return (detail ?? 'Server error', null);
+      }
+      return ('Server error', null);
     }
   }
 

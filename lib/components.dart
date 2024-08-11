@@ -203,27 +203,30 @@ class MoreItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 8.0),
-      child: RichText(
-        softWrap: true,
-        text: TextSpan(
-          text: '$title ',
-          style: DefaultTextStyle.of(context).style.copyWith(
-                fontWeight: FontWeight.bold,
-                color: isDark ? null : Colors.white,
-                fontSize: isDark ? 18 : 16,
-              ),
-          children: <TextSpan>[
-            TextSpan(
-              text: message,
-              style: TextStyle(
-                fontWeight: FontWeight.normal,
-                color: isDark ? null : Colors.white,
-                fontSize: isDark ? 16 : 14,
-              ),
+      padding: const EdgeInsets.only(top: 20.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            textAlign: TextAlign.left,
+            style: DefaultTextStyle.of(context).style.copyWith(
+                  fontWeight: FontWeight.w500,
+                  color: isDark ? null : Colors.white,
+                  fontSize: isDark ? 18 : 16,
+                ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            message,
+            textAlign: TextAlign.left,
+            style: TextStyle(
+              fontWeight: FontWeight.normal,
+              color: isDark ? null : Colors.white,
+              fontSize: isDark ? 16 : 14,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
