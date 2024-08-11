@@ -7,32 +7,35 @@ import 'package:farmers_guide/networking/farm_remote.dart';
 import 'package:farmers_guide/services/providers.dart';
 import 'package:farmers_guide/services/user_state.dart';
 import 'package:farmers_guide/services/weather_condition.dart';
+import 'package:farmers_guide/ui/login_ui.dart';
+import 'package:farmers_guide/ui/widgets/crops_section.dart';
 import 'package:farmers_guide/utils.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 
-class WeatherUi extends StatefulWidget {
+class WeatherUi extends ConsumerStatefulWidget {
   const WeatherUi({super.key});
   static const routeName = '/home';
   @override
-  State<WeatherUi> createState() => _WeatherUiState();
+  ConsumerState<WeatherUi> createState() => _WeatherUiState();
 }
 
-class _WeatherUiState extends State<WeatherUi> {
+class _WeatherUiState extends ConsumerState<WeatherUi> {
   List<Farm> farms = [];
-  Farm? selectedFarm;
   Placemark? location;
 
   @override
   void initState() {
     super.initState();
     farms = userMeState.value?.farms ?? [];
-    selectedFarm = farms.isEmpty ? null : farms[0];
     Future.microtask(() async {
+      final sFarm = farms.isEmpty ? null : farms[0];
+      ref.watch(selectedFarm.notifier).update((state) => sFarm);
+      ref.invalidate(getCropsProvider);
       List<Placemark> placemarks = await placemarkFromCoordinates(
-          selectedFarm?.latitude ?? 0, selectedFarm?.longitude ?? 0);
+          sFarm?.latitude ?? 0, sFarm?.longitude ?? 0);
       location = placemarks[0];
     });
   }
@@ -93,7 +96,7 @@ class _WeatherUiState extends State<WeatherUi> {
                   Expanded(
                     child: DropdownButtonFormField(
                       hint: Text(
-                        selectedFarm?.name ?? 'Farms',
+                        ref.watch(selectedFarm)?.name ?? 'Farms',
                         style: const TextStyle(
                           color: Colors.black38,
                         ),
@@ -112,9 +115,10 @@ class _WeatherUiState extends State<WeatherUi> {
                           )
                           .toList(),
                       onChanged: (value) {
-                        setState(() {
-                          selectedFarm = value;
-                        });
+                        ref
+                            .watch(selectedFarm.notifier)
+                            .update((state) => value);
+                        ref.invalidate(selectedCrop);
                       },
                       validator: (value) {
                         return null;
@@ -134,16 +138,26 @@ class _WeatherUiState extends State<WeatherUi> {
                 ],
               ),
               const SizedBox(
-                height: 18,
+                height: 16,
+              ),
+              const CropsSection(),
+              const SizedBox(
+                height: 6,
               ),
               Expanded(
                 child: Consumer(builder: (context, ref, _) {
                   return FutureBuilder(
                       future: FarmRemote.fetchFarmWeatherForcast(
-                        farmId: selectedFarm?.id ?? 0,
+                        farmId: ref.watch(selectedFarm)?.id ?? 0,
                         numberOfDays: 3,
                       ),
                       builder: (context, asyncSnapshot) {
+                        if (user == null) {
+                          Future.microtask(() {
+                            Navigator.pushReplacementNamed(
+                                context, LoginUi.routeName);
+                          });
+                        }
                         if (asyncSnapshot.connectionState ==
                             ConnectionState.waiting) {
                           return const Center(
@@ -177,20 +191,29 @@ class _WeatherUiState extends State<WeatherUi> {
                                 child: Column(
                                   children: [
                                     SizedBox(
-                                      height: 460,
+                                      height: 408,
                                       child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
                                         children: [
-                                          Text(
-                                            location?.locality ?? 'Street',
-                                            style:
-                                                const TextStyle(fontSize: 20),
-                                          ),
-                                          Text(
-                                            location?.country ?? 'Country',
-                                            style: const TextStyle(
-                                              fontSize: 40,
-                                              fontWeight: FontWeight.w500,
-                                            ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                location?.country ?? 'Country',
+                                                style: const TextStyle(
+                                                  fontSize: 40,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 20),
+                                              Text(
+                                                location?.locality ?? 'Street',
+                                                style: const TextStyle(
+                                                    fontSize: 20),
+                                              ),
+                                            ],
                                           ),
                                           Expanded(
                                             child: Column(
@@ -221,7 +244,7 @@ class _WeatherUiState extends State<WeatherUi> {
                                               ],
                                             ),
                                           ),
-                                          const SizedBox(height: 32),
+                                          const SizedBox(height: 20),
                                           WeatherSection(forcasts),
                                         ],
                                       ),
@@ -243,20 +266,26 @@ class _WeatherUiState extends State<WeatherUi> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                "Explore plant/soil health",
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .titleLarge!
-                                                    .copyWith(
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                    ),
-                                              ),
+                                              Consumer(
+                                                  builder: (context, ref, _) {
+                                                final crop =
+                                                    ref.watch(selectedCrop);
+                                                return Text(
+                                                  "Explore ${crop?.cropType ?? 'crop'} health",
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .titleMedium!
+                                                      .copyWith(
+                                                        fontSize: 20,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                );
+                                              }),
                                               const SizedBox(height: 12),
                                               const Text(
-                                                "Take a picture  or upload image of your plant or soil and get AI insights about the health and properties",
-                                                style: TextStyle(fontSize: 12),
+                                                "Take a picture or upload image of your crop and get AI insights about the health and properties",
+                                                style: TextStyle(fontSize: 14),
                                               ),
                                             ],
                                           ),
