@@ -4,6 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:farmers_guide/constants/app_url.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 
 const _tempImagePath = 'Temp';
@@ -51,6 +52,9 @@ class _CameraAppState extends State<CameraDiagnosisUi> {
   @override
   void dispose() {
     controller.dispose();
+    MediaQuery.platformBrightnessOf(context) == Brightness.dark
+        ? SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark)
+        : SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
     super.dispose();
   }
 
@@ -59,6 +63,7 @@ class _CameraAppState extends State<CameraDiagnosisUi> {
     if (!controller.value.isInitialized) {
       return Container();
     }
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
     return Scaffold(
       backgroundColor: Colors.black,
       body: LayoutBuilder(builder: (context, constraints) {
