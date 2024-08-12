@@ -155,44 +155,42 @@ class CropDiseaseDiagnosisUi extends ConsumerWidget {
                         //   ),
                         // ),
                         // const SizedBox(height: 12),
-                        Expanded(
-                          child: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 500),
-                            switchInCurve: Curves.easeIn,
-                            switchOutCurve: Curves.easeOut,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                MoreItem(
-                                  title: 'What causes this',
-                                  message: disease.causesOfDisease,
-                                  isDark: true,
-                                ),
-                                MoreItem(
-                                  title: 'How to identify',
-                                  message: disease.howToIdentifyDisease,
-                                  isDark: true,
-                                ),
-                                MoreItem(
-                                  title: 'Treatment and recommendations',
-                                  message: disease.treatmentRecommendation,
-                                  isDark: true,
-                                ),
-                                MoreItem(
-                                  title: 'Other things to note',
-                                  message: disease.otherThingsToNote,
-                                  isDark: true,
-                                ),
-                                MoreItem(
-                                  title: 'Confidence level',
-                                  message: disease.confidenceLevel.toString() ==
-                                          '-1.0'
-                                      ? 'N/A'
-                                      : disease.confidenceLevel.toString(),
-                                  isDark: true,
-                                ),
-                              ],
-                            ),
+                        AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 500),
+                          switchInCurve: Curves.easeIn,
+                          switchOutCurve: Curves.easeOut,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              MoreItem(
+                                title: 'What causes this',
+                                message: disease.causesOfDisease,
+                                isDark: true,
+                              ),
+                              MoreItem(
+                                title: 'How to identify',
+                                message: disease.howToIdentifyDisease,
+                                isDark: true,
+                              ),
+                              MoreItem(
+                                title: 'Treatment and recommendations',
+                                message: disease.treatmentRecommendation,
+                                isDark: true,
+                              ),
+                              MoreItem(
+                                title: 'Other things to note',
+                                message: disease.otherThingsToNote,
+                                isDark: true,
+                              ),
+                              MoreItem(
+                                title: 'Confidence level',
+                                message:
+                                    disease.confidenceLevel.toString() == '-1.0'
+                                        ? 'N/A'
+                                        : disease.confidenceLevel.toString(),
+                                isDark: true,
+                              ),
+                            ],
                           ),
                         ),
                       ],
