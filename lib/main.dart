@@ -155,9 +155,6 @@ class OnboardingScreen extends StatelessWidget {
   void _onOnboardingComplete(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('seenOnboarding', true);
-
-    print("Onboarding completed or skipped!");
-
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
           builder: (_) => const OnboardingOrHome()), // Go to main screen
