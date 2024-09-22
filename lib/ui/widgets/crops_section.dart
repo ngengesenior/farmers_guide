@@ -1,3 +1,4 @@
+import 'package:farmers_guide/alerts.dart';
 import 'package:farmers_guide/models/crop.dart';
 import 'package:farmers_guide/services/providers.dart';
 import 'package:farmers_guide/ui/crop_create_ui.dart';
@@ -32,18 +33,26 @@ class CropsSection extends StatelessWidget {
                     child: CropsWidget(),
                   ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, CropCreateUi.routeName);
-                  },
-                  child: const Padding(
-                    padding: EdgeInsets.only(left: 12),
-                    child: Icon(
-                      CupertinoIcons.add_circled,
-                      color: Colors.black,
+                Consumer(builder: (context, ref, _) {
+                  final farm = ref.watch(selectedFarm);
+                  return GestureDetector(
+                    onTap: () {
+                      if (farm == null) {
+                        MyAlert.showWarning(
+                            context, "Can not add crop, Farm is not selected");
+                      } else {
+                        Navigator.pushNamed(context, CropCreateUi.routeName);
+                      }
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.only(left: 12),
+                      child: Icon(
+                        CupertinoIcons.add_circled,
+                        color: Colors.black,
+                      ),
                     ),
-                  ),
-                )
+                  );
+                })
               ],
             ),
           ),

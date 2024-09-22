@@ -53,6 +53,9 @@ dependencies:
   http_parser: ^4.0.2
   dio: ^5.5.0+1
   flutter_launcher_icons: ^0.13.1
+  firebase_messaging: ^14.7.10
+  flutter_cors: ^1.5.0
+  flutter_local_notifications: ^17.2.2
 
 
 dev_dependencies:
